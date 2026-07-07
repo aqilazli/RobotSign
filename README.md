@@ -1,4 +1,4 @@
-# sign_language
+# Robot sign_language
 
 A ROS (Noetic) package for **Malaysian Sign Language (MSL)** recognition. It reads a
 USB camera stream, detects hand landmarks with MediaPipe, classifies the gesture with
