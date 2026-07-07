@@ -1,0 +1,46 @@
+<launch>
+  <include file="$(find sign_language)/src/launch/camera.launch"/>
+
+  <!-- 1. sound_play: -->
+  <node name="soundplay_node"
+        pkg="sound_play"
+        type="soundplay_node.py"
+        output="screen"/>
+
+  <!-- 2. MSL hand-gesture detector – publishes /msl/prediction -->
+  <node name="msl_detector"
+        pkg="sign_language"
+        type="msl_detector.py"
+        output="screen">
+    <param name="camera_topic" value="/camera/image_raw"/>
+    <param name="show_window"  value="true"/>
+  </node>
+
+  <!-- 3. MSL sound node – subscribes to /msl/prediction, speaks -->
+  <node name="msl_sound"
+        pkg="sign_language"
+        type="msl_sound.py"
+        output="screen"/>
+
+  <!-- 4. MSL voice-to-text node – listens to mic, publishes /msl/voice_text -->
+  <!--    Publishes:                                                           -->
+  <!--      /msl/voice_text   (String) — plain transcript, lower-case         -->
+  <!--      /msl/voice_event  (String) — JSON with text, source, timestamp    -->
+  <node name="msl_voice_to_text"
+        pkg="sign_language"
+        type="msl_voice_to_text.py"
+        output="screen">
+    <!-- BCP-47 language tag for Google Web Speech (ms-MY = Malay Malaysia) -->
+    <param name="language"         value="ms-MY"/>
+    <!-- Mic sensitivity: raise if it triggers on background noise -->
+    <param name="energy_threshold" value="300"/>
+    <!-- Seconds of silence that mark the end of a spoken phrase -->
+    <param name="pause_threshold"  value="0.8"/>
+    <!-- Max seconds to capture per phrase before cutting off -->
+    <param name="phrase_timeout"   value="3.0"/>
+    <!-- Set true + provide vosk_model_path to run fully offline -->
+    <param name="use_offline"      value="false"/>
+    <param name="vosk_model_path"  value=""/>
+  </node>
+
+</launch>
